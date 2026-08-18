@@ -1,0 +1,1099 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>SINTIAN 模板化藍圖</title>
+    <style>
+      :root {
+        --bg: #f6f7f9;
+        --card: #ffffff;
+        --line: #e3e6ea;
+        --line-soft: #eef0f3;
+        --ink: #1a1d21;
+        --ink-2: #5b6470;
+        --ink-3: #8b95a1;
+        --done: #1f7a4d;
+        --done-bg: #e6f4ec;
+        --wip: #9a6200;
+        --wip-bg: #fdf1dc;
+        --aaron: #1d5fb0;
+        --aaron-bg: #e7f0fb;
+        --todo: #6b7280;
+        --todo-bg: #eef0f3;
+        --later: #7a5ba6;
+        --later-bg: #f1ebf8;
+        --accent: #1a1d21;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14171a;
+          --card: #1c2024;
+          --line: #2e343a;
+          --line-soft: #262b30;
+          --ink: #eef1f4;
+          --ink-2: #a8b2bd;
+          --ink-3: #7d8791;
+          --done: #6ed69f;
+          --done-bg: #17331f;
+          --wip: #e8b45c;
+          --wip-bg: #33280f;
+          --aaron: #7fb2f0;
+          --aaron-bg: #14263b;
+          --todo: #9aa4b0;
+          --todo-bg: #24292e;
+          --later: #bfa3e6;
+          --later-bg: #271f33;
+          --accent: #eef1f4;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC",
+          "Hiragino Sans CNS", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+        line-height: 1.75;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 32px 20px 96px;
+      }
+      header.top {
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 24px;
+        margin-bottom: 28px;
+      }
+      h1 {
+        font-size: 30px;
+        line-height: 1.3;
+        margin: 0 0 8px;
+        letter-spacing: -0.01em;
+      }
+      .sub {
+        color: var(--ink-2);
+        font-size: 15px;
+        margin: 0;
+      }
+      .meta {
+        margin-top: 14px;
+        font-size: 13px;
+        color: var(--ink-3);
+      }
+      h2 {
+        font-size: 20px;
+        margin: 44px 0 6px;
+        letter-spacing: -0.01em;
+      }
+      h2 + .lead {
+        color: var(--ink-2);
+        font-size: 14px;
+        margin: 0 0 18px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 20px 22px;
+      }
+      .headline {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 26px;
+        align-items: center;
+      }
+      @media (max-width: 700px) {
+        .headline {
+          grid-template-columns: 1fr;
+          gap: 14px;
+        }
+      }
+      .bignum {
+        font-size: 62px;
+        font-weight: 650;
+        line-height: 1;
+        letter-spacing: -0.03em;
+      }
+      .bignum span {
+        font-size: 22px;
+        font-weight: 500;
+        color: var(--ink-2);
+      }
+      .bigcap {
+        font-size: 13px;
+        color: var(--ink-3);
+        margin-top: 6px;
+      }
+      .plain {
+        font-size: 15px;
+        color: var(--ink);
+      }
+      .plain strong {
+        font-weight: 650;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 16px;
+      }
+      @media (max-width: 760px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
+      .mile-h {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+      }
+      .mile-t {
+        font-weight: 650;
+        font-size: 16px;
+      }
+      .mile-p {
+        font-size: 13px;
+        color: var(--ink-3);
+        white-space: nowrap;
+      }
+      .bar {
+        height: 8px;
+        background: var(--line-soft);
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 12px 0 4px;
+      }
+      .bar > i {
+        display: block;
+        height: 100%;
+        background: var(--done);
+        border-radius: 999px;
+      }
+      .bar.mixed > i.w {
+        background: var(--wip);
+      }
+      .barrow {
+        display: flex;
+        height: 8px;
+        background: var(--line-soft);
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 12px 0 4px;
+      }
+      .barrow > i {
+        display: block;
+        height: 100%;
+      }
+      .why {
+        font-size: 14px;
+        color: var(--ink-2);
+        margin: 10px 0 0;
+      }
+      ul.tight {
+        margin: 10px 0 0;
+        padding-left: 20px;
+      }
+      ul.tight li {
+        margin: 4px 0;
+        font-size: 14.5px;
+      }
+      ul.flat {
+        list-style: none;
+        padding-left: 0;
+        margin: 12px 0 0;
+      }
+      ul.flat li {
+        margin: 6px 0;
+        font-size: 14.5px;
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      details.ch {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        margin-bottom: 12px;
+        overflow: hidden;
+      }
+      details.ch > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 18px 22px;
+      }
+      details.ch > summary::-webkit-details-marker {
+        display: none;
+      }
+      .chtop {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 14px;
+      }
+      .chname {
+        font-size: 17px;
+        font-weight: 650;
+      }
+      .chname em {
+        font-style: normal;
+        color: var(--ink-3);
+        font-weight: 500;
+        font-size: 13px;
+        margin-left: 8px;
+      }
+      .chcount {
+        font-size: 13px;
+        color: var(--ink-2);
+        white-space: nowrap;
+      }
+      .chplain {
+        font-size: 14px;
+        color: var(--ink-2);
+        margin: 6px 0 0;
+      }
+      .lessons {
+        border-top: 1px solid var(--line-soft);
+        padding: 6px 22px 18px;
+      }
+      .lesson {
+        display: grid;
+        grid-template-columns: 76px 1fr;
+        gap: 14px;
+        padding: 14px 0;
+        border-bottom: 1px dashed var(--line-soft);
+      }
+      .lesson:last-child {
+        border-bottom: none;
+      }
+      .pill {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 3px 0;
+        width: 76px;
+        text-align: center;
+        border-radius: 6px;
+        line-height: 1.5;
+      }
+      .s-done {
+        color: var(--done);
+        background: var(--done-bg);
+      }
+      .s-wip {
+        color: var(--wip);
+        background: var(--wip-bg);
+      }
+      .s-todo {
+        color: var(--todo);
+        background: var(--todo-bg);
+      }
+      .s-aaron {
+        color: var(--aaron);
+        background: var(--aaron-bg);
+      }
+      .s-later {
+        color: var(--later);
+        background: var(--later-bg);
+      }
+      .ltitle {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0 0 2px;
+      }
+      .lplain {
+        font-size: 14px;
+        color: var(--ink-2);
+        margin: 0;
+      }
+      .lnote {
+        font-size: 12.5px;
+        color: var(--ink-3);
+        margin: 4px 0 0;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .chip {
+        font-size: 12.5px;
+        color: var(--ink-2);
+        background: var(--line-soft);
+        border-radius: 6px;
+        padding: 4px 9px;
+      }
+      .extra {
+        border-top: 1px solid var(--line-soft);
+        padding: 16px 22px 20px;
+      }
+      .extra h4 {
+        margin: 0 0 4px;
+        font-size: 14px;
+      }
+      .extra p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--ink-3);
+      }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin: 0 0 14px;
+        flex-wrap: wrap;
+      }
+      button.f {
+        font: inherit;
+        font-size: 13px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink-2);
+        cursor: pointer;
+      }
+      button.f[aria-pressed="true"] {
+        background: var(--accent);
+        color: var(--bg);
+        border-color: var(--accent);
+      }
+      .day {
+        display: grid;
+        grid-template-columns: 96px 1fr;
+        gap: 18px;
+        padding: 18px 0;
+        border-bottom: 1px solid var(--line-soft);
+      }
+      @media (max-width: 620px) {
+        .day {
+          grid-template-columns: 1fr;
+          gap: 6px;
+        }
+        .lesson {
+          grid-template-columns: 1fr;
+          gap: 6px;
+        }
+      }
+      .date {
+        font-size: 14px;
+        font-weight: 650;
+        color: var(--ink-2);
+        white-space: nowrap;
+      }
+      .dtitle {
+        font-size: 15.5px;
+        font-weight: 650;
+        margin: 0 0 4px;
+      }
+      .dwhy {
+        font-size: 13.5px;
+        color: var(--ink-3);
+        margin: 8px 0 0;
+      }
+      table.gloss {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      table.gloss td {
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--line-soft);
+        vertical-align: top;
+      }
+      table.gloss td:first-child {
+        width: 190px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .callout {
+        border-left: 3px solid var(--wip);
+        background: var(--card);
+        border-radius: 0 10px 10px 0;
+        padding: 14px 18px;
+        margin: 14px 0 0;
+      }
+      .callout h4 {
+        margin: 0 0 6px;
+        font-size: 14.5px;
+      }
+      .callout p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--ink-2);
+      }
+      footer.bot {
+        margin-top: 56px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+        font-size: 13px;
+        color: var(--ink-3);
+      }
+      footer.bot li {
+        margin: 4px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <h1>SINTIAN 模板化藍圖</h1>
+        <p class="sub">
+          「模板化」＝同一套程式，不改一行程式碼，就能開出下一個客戶的網站；再往後，是這台機器自己會跑，不需要你出現在流程裡。
+          這頁就是那條路的地圖：走到哪、還差什麼、每一項用白話講清楚。
+        </p>
+        <p class="meta" id="meta"></p>
+      </header>
+
+      <section id="headline"></section>
+      <section id="milestones"></section>
+
+      <h2>現在最該做的三件事</h2>
+      <p class="lead">依「不做會出事」排序，不是依難度。</p>
+      <section id="next3"></section>
+
+      <h2>課程進度：七章</h2>
+      <p class="lead">
+        每一章是一個能力，不是一批程式。點開看細項；每一堂課都有白話說明。
+      </p>
+      <div class="toolbar">
+        <button class="f" data-filter="all" aria-pressed="true">全部</button>
+        <button class="f" data-filter="open" aria-pressed="false">只看未完成</button>
+        <button class="f" data-filter="done" aria-pressed="false">只看完成</button>
+        <button class="f" data-toggle="expand" aria-pressed="false">全部展開</button>
+      </div>
+      <section id="chapters"></section>
+
+      <h2>這幾天做了什麼</h2>
+      <p class="lead">
+        時間軸從 8/11 開始，那天起工作重心從「把網站做出來」轉成「把網站做成產品」。
+      </p>
+      <section id="timeline" class="card"></section>
+
+      <h2>這一週最值得記住的三個教訓</h2>
+      <p class="lead">有些日子看起來沒有新功能，其實是在補這些洞。</p>
+      <section id="lessons-learned"></section>
+
+      <h2>Aaron 的功課</h2>
+      <p class="lead">這些不是程式問題，是只有你能做的事；沒做，對應的功能就是空的或沒生效。</p>
+      <section id="homework" class="card"></section>
+
+      <h2>名詞白話對照</h2>
+      <p class="lead">報告裡看到這些字，就是這個意思。</p>
+      <section id="glossary" class="card"></section>
+
+      <footer class="bot">
+        <div id="changelog"></div>
+      </footer>
+    </div>
+
+    <script>
+      // ─────────────────────────────────────────────────────────────
+      // 這份 DATA 就是藍圖的唯一資料來源。每天完成一件事，改這裡即可：
+      //   1. 找到對應的 lesson，把 s 從 "todo"/"wip" 改成 "done"
+      //   2. 在 timeline 最前面加一天
+      //   3. 更新 updated 日期，並在 changelog 加一行
+      // 狀態代號：done 完成 / wip 進行中 / aaron 等 Aaron / todo 未開始 / later 已決策延後
+      // ─────────────────────────────────────────────────────────────
+      const DATA = {
+        updated: "2026-08-18",
+        codeVersion: "main 1376b47",
+        siteVersion: "production-20260817-2246-da92d44",
+
+        milestones: [
+          {
+            t: "里程碑 A：能收錢、能交付第一個客戶站",
+            plain:
+              "客人簽約後，你有一條走得完的流水線：開站、交付、備份、監控、收費都有人（或機器）負責。",
+            items: [
+              { t: "一套程式開得出不同產業的站", s: "done" },
+              { t: "交付文件：開站檢查表＋客戶操作手冊", s: "done" },
+              { t: "開站腳本真的跑過一次（第一個客戶時陪跑）", s: "wip" },
+              { t: "異地備份真的生效（等你跑一次精靈）", s: "aaron" },
+              { t: "客戶登記簿＋續費提醒（最小版就好）", s: "todo" },
+              { t: "大陸連線實測（找大陸的人實際開一次）", s: "todo" },
+            ],
+          },
+          {
+            t: "里程碑 B：機器自己會跑（1,000 客規模）",
+            plain:
+              "開站變成資料庫新增一列、部署一次全體更新、收費與監控全自動。你只處理例外。",
+            items: [
+              { t: "租戶欄位打底＋漏了 CI 會擋", s: "done" },
+              { t: "共用資料庫＋租戶隔離鎖（A 看不到 B）", s: "todo" },
+              { t: "後台按一顆鈕開站", s: "todo" },
+              { t: "萬用網域＋自動憑證", s: "todo" },
+              { t: "灰度發布（先更新 5%）＋自動回滾", s: "todo" },
+              { t: "計費全自動（提醒、暫停、恢復）", s: "todo" },
+              { t: "客戶自助註冊／試用站", s: "todo" },
+            ],
+          },
+        ],
+
+        next3: [
+          {
+            t: "跑一次異地備份精靈（只有你能做，約 30 分鐘）",
+            plain:
+              "程式已經寫好、測過了，但雲端金鑰只有你能申請。現在 GitHub 上只設了 1 個密鑰（部署用），備份要的 7 個都還沒設，所以雲端備份一份都還沒有。",
+            risk:
+              "本機排程過去三週有 6 天完全沒備份（凌晨 2 點 Mac 在睡覺），Supabase 免費方案自己也不留備份。今天資料庫出事，就是真的沒有備份。",
+            how: "在專案目錄執行：bash scripts/setup-offsite-backup.sh（精靈會帶你申請 Cloudflare、產生密語、寫入 GitHub）",
+          },
+          {
+            t: "後台把交易條件與商品規格填起來",
+            plain:
+              "8/17 上線的交易條件（交期／付款／出貨／最低訂單）、比較頁規格列、款式照片，程式都做好了，但資料庫裡是空的——空的就不顯示，所以客人現在看不到。",
+            risk: "做好的功能等於沒上線，買家還是得寄信問你同樣四個問題。",
+            how: "後台 → 設定 → 交易條件；商品 → 逐件補 MOQ／外箱／毛重／櫃量；款式 → 上傳每款照片",
+          },
+          {
+            t: "決定客戶登記簿放哪裡（先 Google Sheet 也行）",
+            plain:
+              "一張表記：客戶、方案、續費日、網域、用的模板版本。第一個客戶簽約當天就要有，不然收費會靠記憶。",
+            risk: "漏收年費、不知道哪個客戶站跑的是哪一版；客戶多了就再也追不回來。",
+            how: "你決定用 Google Sheet 或後台功能，我來建欄位與續費提醒",
+          },
+        ],
+
+        chapters: [
+          {
+            n: "第一章",
+            t: "一套程式，開得出不同產業的站",
+            plain:
+              "模板化的地基。以前程式裡到處寫著「SINTIAN」和美髮分類，換客戶就得改程式；現在全部改成讀設定，換產業＝換一份設定檔。",
+            lessons: [
+              {
+                t: "前台不再寫死品牌",
+                s: "done",
+                w: "網頁標題、分享圖名稱、頁尾年份都改成讀後台設定，不再寫著 SINTIAN。",
+                n: "2026-08-06 完成，08-08 上線",
+              },
+              {
+                t: "後台也不再寫死品牌",
+                s: "done",
+                w: "登入頁、後台標題、匯出檔名、通知信主旨會自動變成客戶的公司名。",
+              },
+              {
+                t: "要開幾種語言，後台勾",
+                s: "done",
+                w: "哪幾種語言對外開放、哪一種是原文（打字用的那一種），都是設定。SINTIAN 是五語，客戶可以只要簡中＋英文。",
+                n: "限制：五語之外要加第六種語言，還是得改程式加字典檔",
+              },
+              {
+                t: "商品規格欄位自訂",
+                s: "done",
+                w: "美髮業要「重量」，五金業要「材質」。欄位由設定決定，前台規格表會自動跟著長出來。",
+              },
+              {
+                t: "詢價表單欄位自訂",
+                s: "done",
+                w: "客戶想在詢價單多問一欄「預計採購量」，後台加一個欄位就有，通知信與後台詳情都會帶。",
+              },
+              {
+                t: "品牌色設定化",
+                s: "done",
+                w: "換一組色票，整站顏色跟著換；沒設定就用預設，長相跟現在一模一樣。",
+              },
+              {
+                t: "AI 功能可換供應商、可逐站關閉",
+                s: "done",
+                w: "翻譯用的 AI 換一家也不用改程式；某個客戶不想用 AI，關掉就好。送 AI 前會先遮掉 Email 與電話。",
+              },
+              {
+                t: "分類內容脫離程式",
+                s: "done",
+                w: "三個美髮分類原本寫在程式的字典裡（五種語言檔被迫都要有美髮文案），現在只存在資料庫，換產業直接換分類。",
+              },
+              {
+                t: "站台設定包（profile）",
+                s: "done",
+                w: "一份 JSON 描述一個客戶站：品牌、語言、顏色、規格欄位、詢價欄位、分類。一個指令整包寫進資料庫，中間任何一步失敗就整批退回，不會留半套設定。已附第二產業示範包（五金）。",
+              },
+              {
+                t: "商品 Excel 匯入／匯出",
+                s: "done",
+                w: "客戶給你一份 Excel，匯入就有上百件商品；同一份重跑不會變成重複，任一列有錯就整批不寫。",
+                n: "2026-08-12 完成；圖片不在 Excel 範圍內",
+              },
+              {
+                t: "交付文件三件套",
+                s: "done",
+                w: "開站交付檢查表（可逐項打勾）、客戶後台操作手冊、備份與監控的客戶站章節。照著走不會漏步驟。",
+                n: "限制：客戶手冊還沒有截圖",
+              },
+            ],
+          },
+          {
+            n: "第二章",
+            t: "工程護欄：改東西不會把客人的站弄壞",
+            plain:
+              "這章是「敢改」的底氣：每次修改都有機器把關、資料庫改版可回溯、上線要人工按鈕、出事有版本可退。官方路線圖共 21 項，完成 14 項。",
+            lessons: [
+              { t: "不在主線上直接改（獨立分支＋PR）", s: "done", w: "所有修改先開分支、開 PR、機器檢查全綠才進主線，隨時可以只退掉某一次改動。", n: "第一階段 1/8" },
+              { t: "路線圖與驗收標準", s: "done", w: "先寫清楚「做完的定義」再開工，避免嘴上說完成。" },
+              { t: "AI 碰不到正式環境的圍欄", s: "done", w: "Agent 禁止部署、禁止改正式資料庫、禁止碰金鑰；危險腳本沒帶齊環境確認會自己拒絕執行。" },
+              { t: "一個指令跑完所有檢查", s: "done", w: "npm run check：格式、語法、型別、單元測試一次跑完，全綠才算可以交。" },
+              { t: "每次 PR 機器自動檢查", s: "done", w: "GitHub 上的機器會重跑一次全部檢查加建置，紅燈不准合併。" },
+              { t: "第一批自動測試", s: "done", w: "輸入驗證、頻率限制、環境防呆先被測起來。" },
+              { t: "依賴漏洞稽核與安全文件", s: "done", w: "用到的第三方套件每次都掃有沒有已知漏洞；掃到高風險就擋。" },
+              { t: "備份格式升級與驗證工具", s: "done", w: "備份改成有版本、有權限限制、可離線驗證的格式，缺檔或筆數不對會被抓出來。" },
+              { t: "資料庫改版可在乾淨環境從零套用", s: "done", w: "所有資料庫改版檔在隔離環境從零跑一次，證明新客戶站也能一鍵建出同樣的結構。", n: "第二階段 1/7" },
+              { t: "分類與排序改成整批成敗的交易", s: "done", w: "拖拉排序這種要改好幾列的動作，改成資料庫一次交易：全部成功或全部退回，不會排到一半壞掉。" },
+              { t: "權限隔離自動測試", s: "done", w: "訪客、一般登入者、管理員各自能看到什麼、被擋掉什麼，都寫成測試每次自動驗。" },
+              { t: "真瀏覽器全流程測試", s: "done", w: "機器開真的瀏覽器走完五語首頁、詢價、登入、後台增刪改，28 個情境。" },
+              { t: "每個 PR 一個預覽站", s: "later", w: "每次改動都開一個獨立的試看網站。", n: "2026-08-05 與你決策延後：一人團隊、且每個 PR 已用真瀏覽器測過；有第二位協作者或開始量產客戶站再啟動" },
+              { t: "健康檢查、日誌與外部監控", s: "done", w: "網站有一個「我還活著嗎」的檢查網址（連資料庫一起檢查），UptimeRobot 每 5 分鐘打一次，掛了推播你手機。" },
+              { t: "正式上線要人工批准＋可回滾", s: "done", w: "上線只能人工按鈕、還要打確認字串；每次上線自動打版本標籤，要退版就填舊標籤再按一次。" },
+              { t: "文件治理（產品規格與架構全景）", s: "todo", w: "接手的人只讀文件就能懂系統。", n: "已有測試、資安、資料庫、部署、監控、備份六份運維文件；缺產品規格（PRD）與架構全景兩份才算完成", },
+              { t: "重要決策紀錄（ADR）", s: "todo", w: "為什麼選 Supabase、為什麼走多租戶——把當時的理由與被否決的選項寫下來，以後才不會反覆推翻。", n: "第三階段 2/6" },
+              { t: "任務模板", s: "todo", w: "每個任務開工前先寫：做什麼、不做什麼、驗收條件、資料庫與資安影響、怎麼退。" },
+              { t: "一任務一分支＋另一個 Agent 複審", s: "todo", w: "把現在的實務做法寫成規則。", n: "實務上已在做（含 15 個 agent 對抗性審查抓出兩個防空覆蓋缺陷），但沒寫成規則、沒驗收" },
+              { t: "每月依賴／金鑰／權限稽核", s: "todo", w: "每個月固定檢查一次套件更新、金鑰該不該換、誰有權限、文件有沒有過期。" },
+              { t: "每季還原演練＋事故演練", s: "wip", w: "定期真的還原一次備份、真的演練一次「站掛了怎麼辦」。", n: "還原演練 2026-08-12 首次通過（8 張表筆數與內容雜湊全符，RPO／RTO 已寫進文件）；事故演練未做，還原演練每季要重跑" },
+            ],
+            extra: {
+              h: "另外還完成了 21 項以外的工作（不計入 14/21）",
+              p: "這些是上線過程中發現必須補的，每一項都有驗證證據：",
+              chips: [
+                "正式庫結構與版本紀錄對齊",
+                "兩支資料庫改版受控套用",
+                "首次正式部署與驗收",
+                "首次備份還原演練",
+                "圖片與管理員帳號也備份",
+                "商品 Excel 匯入匯出",
+                "詢價匯出防公式攻擊",
+                "操作留痕（誰改了什麼）",
+                "加密異地備份＋看門狗",
+                "備份補上漏掉的 5 張表",
+                "租戶欄位補齊＋CI 防漏",
+              ],
+            },
+          },
+          {
+            n: "第三章",
+            t: "開一個新客戶站要多久",
+            plain:
+              "現在開一站是「照著檢查表做 7 個步驟」，約 30 分鐘到數小時。目標是一個指令跑完，最後是按一顆鈕。",
+            lessons: [
+              {
+                t: "開站腳本（provision-client.sh）",
+                s: "wip",
+                w: "腳本寫好了，但從來沒有真的跑過一次——腳本自己也這樣註明。",
+                n: "第一個客戶開站時要陪著跑，邊跑邊修",
+              },
+              {
+                t: "一鍵 bootstrap：從零到可交付",
+                s: "todo",
+                w: "目前開站要人工串 7 個步驟（建庫、跑改版檔、開服務、設環境變數、建管理員、套設定包、綁網域）。目標是一個指令做完。",
+              },
+              {
+                t: "第一個客戶實跑並回頭修",
+                s: "todo",
+                w: "先手動跑十次再自動化——自動化沒做熟的流程，只是用機器放大錯誤。",
+                n: "等第一個客戶",
+              },
+              {
+                t: "版本升級演練",
+                s: "todo",
+                w: "自家站更新後，要能把所有客戶站一次升到同一個版本。",
+                n: "第 3 個客戶前要建；不做就會變成 10 個客戶 10 個版本",
+              },
+              {
+                t: "客戶站的備份與監控自動掛上",
+                s: "todo",
+                w: "客戶的資料在客戶自己的資料庫，自家站的備份與監控涵蓋不到。現在每開一站都要手動設，忘了就是沒有。",
+              },
+              { t: "開站交付檢查表", s: "done", w: "開站、備份、監控、交付前驗收、交給客戶、事後追蹤六段，逐項打勾；含容易出錯的完整指令（漏了環境變數會把客戶帳號建到自家資料庫）。" },
+              { t: "客戶後台操作手冊", s: "done", w: "給客戶自己看的文字說明：登入改密碼、上商品、改文案圖片、看詢價。客戶自己會用，你就不用被問。", n: "缺截圖與影片" },
+            ],
+          },
+          {
+            n: "第四章",
+            t: "收錢與續費不會漏",
+            plain:
+              "年費是這門生意的生命線，而這一章目前幾乎全空——文件寫好了，機制沒有。第一個客戶簽約前要補起來。",
+            lessons: [
+              { t: "報價單與方案文件", s: "done", w: "方案檔位、報價單網頁、報價維護規則都已定案並文件化。" },
+              { t: "收費與合約規則", s: "done", w: "怎麼收、收多少、發票口徑、續費規則都寫成文件了。" },
+              { t: "中央客戶登記簿", s: "todo", w: "一張表記客戶、方案、續費日、網域、模板版本。先用 Google Sheet 也行，重點是有。", n: "第一個客戶簽約時就要建" },
+              { t: "續費提醒排程", s: "todo", w: "續費日前 30／7／1 天自動寄信提醒。這層在階段一就要有雛形，哪怕只是自動提醒＋你手動確認到帳。" },
+              { t: "到期未付自動暫停", s: "todo", w: "到期沒付款，網站顯示「維護中」而不是直接消失，資料照合約保留；付款後自動恢復。" },
+              { t: "配額寫進程式", s: "todo", w: "商品數、圖片張數在後台設上限，超過就擋並提示升級。不做的話一個爆量客戶會吃垮共用資料庫。" },
+              { t: "合約與收據編號化模板", s: "todo", w: "合約、報價、收據都套模板並編號，才管得動幾百份。", n: "第一份合約就是模板首用" },
+            ],
+          },
+          {
+            n: "第五章",
+            t: "出事不會慌：備份與監控",
+            plain:
+              "這一章這幾天進步最大，但最關鍵的一步卡在你手上：雲端備份的金鑰只有你能申請，所以雲端目前一份備份都沒有。",
+            lessons: [
+              { t: "每日備份＋守門員", s: "done", w: "每天把資料匯出成檔案；商品或分類匯出成 0 筆、或筆數比前一份掉超過一半，就中止不覆蓋——防止把空的蓋掉好的。" },
+              { t: "備份涵蓋全部 12 張表", s: "done", w: "8/18 發現備份清單停在很久以前的 8 張表：商品款式 19 筆、內部價格 21 筆、操作紀錄 165 筆完全沒被備份。已補齊，並把「表清單」收成一份單一真相，以後新增表漏登記，機器檢查會直接變紅。" },
+              { t: "圖片檔與管理員帳號也備份", s: "done", w: "還原演練證實資料表救得回來、圖片和帳號救不回來，所以補上圖片增量下載（254 張實測）與帳號清單匯出（不含密碼）。" },
+              { t: "還原演練：證明救得回來", s: "done", w: "在隔離的本機資料庫從零建結構、還原當日備份、逐表比對筆數與內容雜湊——全符。沒驗證過的備份等於沒有備份。" },
+              { t: "加密異地備份到雲端", s: "aaron", w: "改成每天由 GitHub 的機器備份、加密後上傳 Cloudflare R2（不放在你的 Mac 上）。程式與精靈都寫好了，等你跑一次申請金鑰。", n: "目前 GitHub 上只有 1 個密鑰（部署用），備份要的 7 個都還沒設定 → 尚未生效" },
+              { t: "沒跑會通知的看門狗", s: "aaron", w: "每天檢查雲端最新備份有沒有超過 26 小時沒更新。「沒跑」比「跑失敗」危險：失敗會寄信，沒跑則一片安靜——本機排程就是這樣連續失敗 13 次沒人發現。", n: "與上一項同時生效" },
+              { t: "自家站上線監控", s: "done", w: "UptimeRobot 監控首頁與健康檢查網址，資料庫掛掉也會警報，不是只有整站掛才知道。" },
+              { t: "程式錯誤追蹤", s: "todo", w: "客人操作時程式報錯，你要能收到通知並看到現場，而不是等客人抱怨。" },
+              { t: "每季事故演練", s: "todo", w: "假設站掛了、資料被誤改了，照手冊走一次，看手冊到底寫得對不對。" },
+              { t: "GitHub 之外的心跳監控", s: "todo", w: "備份與看門狗都跑在 GitHub 上；GitHub 因帳務被停用時（8/12、8/14 都發生過），兩者會一起停，而且沒人會通知你。" },
+              { t: "資料庫時間點還原（PITR）", s: "later", w: "把資料庫退回到「昨天下午三點」那個狀態。", n: "Supabase 免費方案不提供，需付費方案；目前以每日備份替代" },
+            ],
+          },
+          {
+            n: "第六章",
+            t: "多租戶：一套系統服務 1,000 客",
+            plain:
+              "終局架構。「一客一套」到 1,000 客是死路（光主機年費就 250 萬台幣，也不可能手動維護 1,000 份部署）。所以從第一天就照終局的規矩寫程式，但先不蓋。",
+            lessons: [
+              { t: "一套程式碼永不分岔", s: "done", w: "客製一律走資料庫設定，禁止為某個客戶改程式或開分支。只要有一個客戶是「特別版」，整條自動化就永遠自動不了。" },
+              { t: "核心表預留租戶欄位", s: "done", w: "每一列資料都帶「這是哪個客戶的」欄位。現在全部填同一個值，但將來要合併成共用資料庫時，不用重寫全部查詢。" },
+              { t: "漏了租戶欄位，機器會擋", s: "done", w: "8/18 發現 8/13 之後新增的 5 張表全部漏了這個欄位。補上之後加了靜態檢查：新表沒登記，npm run check 直接紅燈並印出修正指示。順手修好操作留痕會把所有紀錄記到同一個租戶的問題。" },
+              { t: "共用資料庫＋租戶隔離鎖", s: "todo", w: "所有客戶共用一個資料庫，靠資料庫層的鎖保證 A 客戶永遠查不到 B 客戶的資料，而且每次上線由機器自動驗證。" },
+              { t: "後台按一顆鈕開站", s: "todo", w: "開站退化成資料庫新增一列＋綁網域，5 秒。再往後是客戶付款後系統自動開通，你在睡覺。" },
+              { t: "萬用網域＋自動憑證", s: "todo", w: "客戶自己的網域自動生效、自動有 HTTPS，不用一個一個手動綁。" },
+              { t: "灰度發布＋自動回滾", s: "todo", w: "先更新 5% 的客戶，觀察 24 小時沒問題再推全體；出錯自動退回上一版。這是有 1,000 個客戶時還敢改東西的原因。" },
+              { t: "客戶自助註冊／7 天試用站", s: "todo", w: "潛在客戶自己開一個試用站玩兩天，到期自動凍結、資料保留可轉正。自己玩過的成交率遠高於看案例。" },
+              { t: "資料庫分片", s: "todo", w: "租戶多到單一資料庫吃緊（約 200–500 個）就開第二個庫，新租戶進新庫，系統自己知道誰在哪。對客戶無感。" },
+            ],
+          },
+          {
+            n: "第七章",
+            t: "讓 90% 的問題不用問你",
+            plain:
+              "客服自動化。問題會照漏斗被一層一層消滅，最後只有真正的例外會到你面前，而且每處理一次例外，就把它寫成規則讓它不再出現。",
+            lessons: [
+              { t: "防呆設計（最強的客服）", s: "done", w: "後台填錯不會壞、留空不會把舊資料蓋成空的、刪除是軟刪除救得回來。問題根本不發生，就不會有人來問。" },
+              { t: "客戶後台操作手冊（文字版）", s: "done", w: "寫一次，回答一萬次。" },
+              { t: "手冊加截圖與影片", s: "todo", w: "文字說明對不熟電腦的客戶不夠，截圖與短影片能再擋掉一批問題。" },
+              { t: "AI 客服第一線", s: "todo", w: "把手冊餵給 AI，客戶問「怎麼改 Logo」由 AI 24 小時即時回答。" },
+              { t: "工單系統", s: "todo", w: "AI 答不了的進工單（先用 email＋標籤就夠），你每週清一次，目標少於 10 張。" },
+            ],
+          },
+        ],
+
+        timeline: [
+          {
+            d: "8/18",
+            t: "補多租戶打底、補備份漏洞、把備份搬上雲端",
+            items: [
+              "8/13 之後新增的 5 張表全部漏了租戶欄位 → 補上，並讓以後漏了機器直接擋。",
+              "備份清單停在很久以前的 8 張表：商品款式 19 筆、內部價格 21 筆、操作紀錄 165 筆從來沒被備份 → 補齊成 12 張表，並把散在四個檔案的表清單收成一份。",
+              "每日備份改由 GitHub 的機器跑，加密後上傳 Cloudflare R2，另加一支「沒跑就通知」的看門狗。",
+              "把 agent 的專案設定（問題追蹤、分類標籤、領域名詞）寫成文件。",
+            ],
+            why: "這天沒有任何客人看得到的新功能，但補掉的是「以為有備份其實沒有」這種最貴的洞。",
+          },
+          {
+            d: "8/17",
+            t: "商品從「一件商品一張圖」升級成 B2B 買家真正要的樣子",
+            items: [
+              "商品編輯頁改成五個頁籤（對照 Shopline），先給你看樣確認才鋪開。",
+              "多規格款式：尺寸×重量×顏色交叉組合，每款有自己的貨號；內部成本與參考報價存在只有管理員看得到的獨立表。",
+              "商品頁大改版：圖庫切換、選款式、相關商品、底部行動按鈕；詢價會帶著款式與貨號送出。",
+              "每個款式可以上傳自己的照片，前台選款立刻換大圖。",
+              "採購者視角八項：交易條件、最低訂單帶入詢價、型錄下載、獨立比較頁、顏色圓點。",
+            ],
+            why: "這是一整天把「形象網站」變成「採購看得懂的網站」；也是模板化的實力測試——這些全部走設定，客戶站不用改程式就有。",
+          },
+          {
+            d: "8/15",
+            t: "後台分類管理做到 Shopline 的手感",
+            items: [
+              "每個分類可以管自己的商品：拖曳排序、用挑選視窗加入商品（全選、卡片、分頁）。",
+              "分類樹的拖曳修到位：把手、虛線落點、左右鍵換層級、拖曳時整個子樹跟著走、修掉畫面抽搐。",
+            ],
+            why: "後台好不好用直接決定客戶會不會自己維護；客戶自己會做，你就不會被問。",
+          },
+          {
+            d: "8/14",
+            t: "分類升級成獨立頁面與 SEO 地基",
+            items: [
+              "每個分類有自己的網址與頁面、可寫 SEO 標題描述、可放橫幅圖與富文字介紹。",
+              "分類清單改成可拖曳的樹狀結構，搬動用資料庫交易保證不會排到一半壞掉。",
+              "修掉導覽選單的下拉箭頭看起來像句點、第三層飛出面板錯位 7px。",
+            ],
+            why: "分類頁是外貿客戶從 Google 搜進來的入口；同時這一整套是所有客戶站共用的。",
+          },
+          {
+            d: "8/13",
+            t: "把「誰改了什麼」變成資料庫層留痕，加三層分類",
+            items: [
+              "8 張業務表掛上資料庫層留痕：任何新增、修改、刪除自動記錄誰、何時、改前改後整列。應用層記錄可以被繞過，資料庫層不行。",
+              "後台加操作紀錄檢視頁與總覽首頁。",
+              "三層分類＋大選單導覽。",
+              "詢價匯出防公式攻擊：訪客在留言欄填公式，你用 Excel 打開匯出檔時原本會被執行。",
+            ],
+            why: "留痕是「多人用後台」與「量產客戶站」的前置條件——出事時要能回答誰在什麼時候改了什麼。",
+          },
+          {
+            d: "8/12",
+            t: "第一次正式部署走完全套流程，並證明備份救得回來",
+            items: [
+              "GitHub 機器沒錢跑的問題解除（免費額度用完＋預算設 0），重跑全綠。",
+              "第一次用部署工作流上線：先備份、確認全綠、十個步驟全過、自動打版本標籤、上線後逐項驗收。",
+              "第一次還原演練：在隔離的本機資料庫還原當天備份，8 張表筆數與內容雜湊全符，並第一次把「最多丟多少資料、多久救回來」寫成文件。",
+              "備份補上圖片檔與管理員帳號清單；商品 Excel 匯入匯出工具完成。",
+            ],
+            why: "在這天之前，「備份」只是有檔案；這天之後才叫救得回來。",
+          },
+          {
+            d: "8/11",
+            t: "正式資料庫大掃除：先證明、再動手",
+            items: [
+              "用唯讀連線把正式資料庫的結構、必要資料、版本紀錄逐項比對，證明結構是對的、只是缺版本簽到簿。",
+              "先做當日備份並驗證，才補回前 15 支改版紀錄，再一支一支套用兩支新的。",
+              "確認 Railway 沒有接 GitHub 自動部署，合併不會自己上線。",
+            ],
+            why: "早期資料庫是手動建的，直接下指令會把 15 支舊改版檔當成沒跑過而重跑，可能撞壞結構或蓋掉設定。這天的規矩是：先證明，再動手。",
+          },
+        ],
+
+        learned: [
+          {
+            t: "「以為有備份」比「沒有備份」危險",
+            p: "本機排程過去三週有 6 天完全沒跑（凌晨 2 點 Mac 在睡覺），失敗 13 次沒有任何人知道；備份的表清單也停在 8 張，8/13 之後新增的三張表一筆都沒備到。修法不是「記得檢查」，是讓沒跑會通知、讓漏表會被機器擋下。",
+          },
+          {
+            t: "測試「全綠」也可能是假的",
+            p: "8/17 卡住數小時的真正原因，是測試機器連到一個沒關掉的舊程式（已存活 4 小時），整批測試安靜地跑在舊程式上，所以怎麼改都沒反應。已改成開跑前先檢查佔用並中止。",
+          },
+          {
+            t: "同一個根因會在不同地方重複發作",
+            p: "租戶欄位漏掉、備份漏表，兩件事的根因一樣：「必須知道每一張表」的清單散在四個檔案裡，新增表時只改了其中一個。修法是收成一份單一真相，並讓不一致直接讓檢查變紅。",
+          },
+        ],
+
+        homework: [
+          { t: "跑一次異地備份精靈", p: "bash scripts/setup-offsite-backup.sh，約 30 分鐘。不做的話雲端一份備份都沒有。", s: "aaron" },
+          { t: "後台填交易條件", p: "交期、付款、出貨、最低訂單。沒填，商品頁那一區就不顯示。", s: "aaron" },
+          { t: "38 件商品補規格", p: "最低訂單量、外箱尺寸、毛重、櫃量。沒填，比較頁的規格列是空的。", s: "aaron" },
+          { t: "款式照片上傳", p: "白／黑／透明白目前共用同一張主圖，客人看不出差別。", s: "aaron" },
+          { t: "Logo 原始檔與關於我們素材", p: "透明背景 Logo、公司照片、品牌故事重點、認證。", s: "aaron" },
+          { t: "WhatsApp／LINE／WeChat 帳號", p: "頁尾聯絡按鈕沒填就不顯示。", s: "aaron" },
+          { t: "決定 7 張套件升級 PR 怎麼處理", p: "其中 TypeScript 7 與 Vitest 4 是大版本，要單獨驗證，不能順手合併。", s: "aaron" },
+          { t: "大陸連線實測", p: "找大陸那邊的人實際開一次網站，這是核心賣點，只能實測。", s: "aaron" },
+        ],
+
+        glossary: [
+          ["模板化", "同一套程式，不改程式碼就能開出下一個客戶的網站；客製全部走設定。"],
+          ["多租戶", "一套系統同時服務很多客戶，每一列資料都標記屬於誰。終局架構。"],
+          ["租戶欄位（tenant_id）", "資料表裡「這一列是哪個客戶的」那一欄。現在全填同一個值，先預留。"],
+          ["站台設定包（profile）", "一份描述客戶站的設定檔：品牌、語言、顏色、欄位、分類。一個指令整包寫入。"],
+          ["資料庫改版檔（migration）", "資料庫結構的改動紀錄，一支一支照順序套用。新客戶站靠它從零建出一樣的結構。"],
+          ["CI（機器自動檢查）", "每次交程式，GitHub 的機器自動跑格式、型別、測試與建置，紅燈不准合併。"],
+          ["E2E（真瀏覽器實測）", "機器開真的瀏覽器，像客人一樣點完整個流程。"],
+          ["交易（transaction）", "一組要一起成功或一起失敗的資料庫動作，不會做到一半壞掉。"],
+          ["軟刪除", "刪除只是標記為已刪除，資料還在，救得回來。"],
+          ["防空覆蓋", "沒填的欄位不動，不會把既有內容蓋成空的。這條規則救過雲端資料被清空。"],
+          ["操作留痕（audit log）", "誰在什麼時候改了什麼，資料庫自動記錄且無法竄改。"],
+          ["還原演練", "真的把備份還原到一個隔離環境並逐項比對。沒演練過的備份不算備份。"],
+          ["看門狗", "檢查「該跑的事情有沒有跑」的排程。沒跑一片安靜，比跑失敗更危險。"],
+          ["時間點還原（PITR）", "把資料庫退回到某個時刻的狀態，需付費方案。"],
+          ["灰度發布", "先更新一小部分客戶，觀察沒問題再推全體。"],
+        ],
+
+        changelog: [
+          ["2026-08-18", "建立這份藍圖：七章 71 堂課、兩條里程碑、8/11 起的時間軸。"],
+        ],
+      };
+
+      const LABEL = {
+        done: "完成",
+        wip: "進行中",
+        aaron: "等 Aaron",
+        todo: "未開始",
+        later: "已延後",
+      };
+
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>"]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+        );
+      const pill = (s) => `<span class="pill s-${s}">${LABEL[s]}</span>`;
+
+      function tally(lessons) {
+        const t = { done: 0, wip: 0, aaron: 0, todo: 0, later: 0 };
+        lessons.forEach((l) => (t[l.s] = (t[l.s] || 0) + 1));
+        t.total = lessons.length;
+        t.pct = t.total ? Math.round((t.done / t.total) * 100) : 0;
+        return t;
+      }
+
+      const all = DATA.chapters.flatMap((c) => c.lessons);
+      const T = tally(all);
+
+      document.getElementById("meta").textContent =
+        `最後更新 ${DATA.updated}　·　程式版本 ${DATA.codeVersion}　·　正式站 ${DATA.siteVersion}`;
+
+      document.getElementById("headline").innerHTML = `
+        <div class="card headline">
+          <div>
+            <div class="bignum">${T.pct}<span>%</span></div>
+            <div class="bigcap">${T.done} / ${T.total} 堂課完成</div>
+          </div>
+          <div>
+            <p class="plain">
+              一句話：<strong>離「能收錢賣第一個客戶站」只差 4 件事，其中 2 件半天內可以做完；離「機器自己會跑」還差 6 個大工程。</strong>
+            </p>
+            <p class="why">
+              第一章（一套程式開不同產業的站）已經 100% 完成，這是最難、也是最關鍵的地基。
+              現在缺的不是程式能力，是流程與機制：開站腳本沒真的跑過、收費與續費還靠記憶、雲端備份的金鑰還沒申請。
+            </p>
+            <div class="barrow">
+              <i style="width:${(T.done / T.total) * 100}%;background:var(--done)"></i>
+              <i style="width:${((T.wip + T.aaron) / T.total) * 100}%;background:var(--wip)"></i>
+              <i style="width:${(T.later / T.total) * 100}%;background:var(--later)"></i>
+            </div>
+            <p class="lnote">
+              完成 ${T.done}　·　進行中 ${T.wip}　·　等 Aaron ${T.aaron}　·　未開始 ${T.todo}　·　已決策延後 ${T.later}
+            </p>
+          </div>
+        </div>`;
+
+      document.getElementById("milestones").innerHTML = `<div class="grid2">${DATA.milestones
+        .map((m) => {
+          const t = tally(m.items);
+          return `<div class="card">
+            <div class="mile-h"><span class="mile-t">${esc(m.t)}</span><span class="mile-p">${t.done}/${t.total}</span></div>
+            <div class="bar"><i style="width:${t.pct}%"></i></div>
+            <p class="why">${esc(m.plain)}</p>
+            <ul class="flat">${m.items
+              .map((i) => `<li>${pill(i.s)}<span>${esc(i.t)}</span></li>`)
+              .join("")}</ul>
+          </div>`;
+        })
+        .join("")}</div>`;
+
+      document.getElementById("next3").innerHTML = DATA.next3
+        .map(
+          (n, i) => `<div class="card" style="margin-bottom:12px">
+            <div class="mile-t">${i + 1}. ${esc(n.t)}</div>
+            <p class="why">${esc(n.plain)}</p>
+            <p class="why"><strong>不做會怎樣：</strong>${esc(n.risk)}</p>
+            <p class="lnote">怎麼做：${esc(n.how)}</p>
+          </div>`,
+        )
+        .join("");
+
+      document.getElementById("chapters").innerHTML = DATA.chapters
+        .map((c) => {
+          const t = tally(c.lessons);
+          return `<details class="ch">
+            <summary>
+              <div class="chtop">
+                <span class="chname">${esc(c.n)}　${esc(c.t)}<em>點開看 ${t.total} 堂課</em></span>
+                <span class="chcount">${t.done}/${t.total}　${t.pct}%</span>
+              </div>
+              <div class="barrow">
+                <i style="width:${(t.done / t.total) * 100}%;background:var(--done)"></i>
+                <i style="width:${((t.wip + t.aaron) / t.total) * 100}%;background:var(--wip)"></i>
+                <i style="width:${(t.later / t.total) * 100}%;background:var(--later)"></i>
+              </div>
+              <p class="chplain">${esc(c.plain)}</p>
+            </summary>
+            <div class="lessons">${c.lessons
+              .map(
+                (l) => `<div class="lesson" data-s="${l.s}">
+                  <div>${pill(l.s)}</div>
+                  <div>
+                    <p class="ltitle">${esc(l.t)}</p>
+                    <p class="lplain">${esc(l.w)}</p>
+                    ${l.n ? `<p class="lnote">${esc(l.n)}</p>` : ""}
+                  </div>
+                </div>`,
+              )
+              .join("")}</div>
+            ${
+              c.extra
+                ? `<div class="extra"><h4>${esc(c.extra.h)}</h4><p>${esc(c.extra.p)}</p>
+                   <div class="chips">${c.extra.chips.map((x) => `<span class="chip">${esc(x)}</span>`).join("")}</div></div>`
+                : ""
+            }
+          </details>`;
+        })
+        .join("");
+
+      document.getElementById("timeline").innerHTML = DATA.timeline
+        .map(
+          (d) => `<div class="day">
+            <div class="date">${esc(d.d)}</div>
+            <div>
+              <p class="dtitle">${esc(d.t)}</p>
+              <ul class="tight">${d.items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>
+              <p class="dwhy">為什麼重要：${esc(d.why)}</p>
+            </div>
+          </div>`,
+        )
+        .join("");
+
+      document.getElementById("lessons-learned").innerHTML = DATA.learned
+        .map(
+          (l) =>
+            `<div class="callout"><h4>${esc(l.t)}</h4><p>${esc(l.p)}</p></div>`,
+        )
+        .join("");
+
+      document.getElementById("homework").innerHTML = DATA.homework
+        .map(
+          (h) => `<div class="lesson">
+            <div>${pill(h.s)}</div>
+            <div><p class="ltitle">${esc(h.t)}</p><p class="lplain">${esc(h.p)}</p></div>
+          </div>`,
+        )
+        .join("");
+
+      document.getElementById("glossary").innerHTML = `<table class="gloss">${DATA.glossary
+        .map((g) => `<tr><td>${esc(g[0])}</td><td>${esc(g[1])}</td></tr>`)
+        .join("")}</table>`;
+
+      document.getElementById("changelog").innerHTML =
+        `<strong>更新紀錄</strong><ul class="tight">${DATA.changelog
+          .map((c) => `<li>${esc(c[0])}　${esc(c[1])}</li>`)
+          .join("")}</ul>
+         <p>這份藍圖的資料寫在本檔案的 DATA 區塊；每天完成一件事就改那裡，不必重畫頁面。</p>`;
+
+      // 篩選與展開
+      const btns = [...document.querySelectorAll("button.f")];
+      function applyFilter(mode) {
+        document.querySelectorAll(".lesson[data-s]").forEach((el) => {
+          const s = el.dataset.s;
+          const show =
+            mode === "all" ||
+            (mode === "done" && s === "done") ||
+            (mode === "open" && s !== "done");
+          el.style.display = show ? "" : "none";
+        });
+        if (mode !== "all")
+          document.querySelectorAll("details.ch").forEach((d) => (d.open = true));
+      }
+      btns.forEach((b) =>
+        b.addEventListener("click", () => {
+          if (b.dataset.toggle === "expand") {
+            const on = b.getAttribute("aria-pressed") !== "true";
+            b.setAttribute("aria-pressed", String(on));
+            b.textContent = on ? "全部收合" : "全部展開";
+            document.querySelectorAll("details.ch").forEach((d) => (d.open = on));
+            return;
+          }
+          btns
+            .filter((x) => x.dataset.filter)
+            .forEach((x) =>
+              x.setAttribute("aria-pressed", String(x === b)),
+            );
+          applyFilter(b.dataset.filter);
+        }),
+      );
+    </script>
+  </body>
+</html>
