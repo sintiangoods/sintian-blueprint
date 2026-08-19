@@ -24,6 +24,8 @@
         --todo-bg: #eef0f3;
         --later: #7a5ba6;
         --later-bg: #f1ebf8;
+        --today: #b8562f;
+        --today-bg: #fdefe8;
         --accent: #1a1d21;
       }
       @media (prefers-color-scheme: dark) {
@@ -45,6 +47,8 @@
           --todo-bg: #24292e;
           --later: #bfa3e6;
           --later-bg: #271f33;
+          --today: #f0a077;
+          --today-bg: #3a2318;
           --accent: #eef1f4;
         }
       }
@@ -303,6 +307,49 @@
         color: var(--later);
         background: var(--later-bg);
       }
+      .lesson.today {
+        background: var(--today-bg);
+        box-shadow: inset 3px 0 0 var(--today);
+        padding-left: 14px;
+        margin-left: -14px;
+        border-radius: 0 6px 6px 0;
+      }
+      .tflag {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--today);
+        background: var(--card);
+        border: 1px solid var(--today);
+        border-radius: 6px;
+        padding: 1px 8px;
+        margin-left: 8px;
+        vertical-align: 1px;
+      }
+      .todaycard {
+        background: var(--today-bg);
+        border: 1px solid var(--today);
+        border-radius: 12px;
+        padding: 18px 22px;
+        margin-bottom: 12px;
+      }
+      .todaywho {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 2px 9px;
+        border-radius: 6px;
+        margin-right: 10px;
+        vertical-align: 2px;
+      }
+      .who-me {
+        color: var(--done);
+        background: var(--done-bg);
+      }
+      .who-aaron {
+        color: var(--aaron);
+        background: var(--aaron-bg);
+      }
       .ltitle {
         font-size: 15px;
         font-weight: 600;
@@ -456,13 +503,17 @@
       <section id="headline"></section>
       <section id="milestones"></section>
 
+      <h2>今天還能繼續做的</h2>
+      <p class="lead" id="todaylead"></p>
+      <section id="today"></section>
+
       <h2>現在最該做的三件事</h2>
       <p class="lead">依「不做會出事」排序，不是依難度。</p>
       <section id="next3"></section>
 
       <h2>課程進度：七章</h2>
       <p class="lead">
-        每一章是一個能力，不是一批程式。點開看細項；每一堂課都有白話說明。
+        每一章是一個能力，不是一批程式。點開看細項；每一項都有白話說明。
       </p>
       <div class="toolbar">
         <button class="f" data-filter="all" aria-pressed="true">全部</button>
@@ -547,6 +598,46 @@
           },
         ],
 
+        todayLead:
+          "今天（8/19）第二章已收官，這些是接下來可以馬上接著做的。標「等你」的只有你能做，標「我來做」的你說一聲就開工。",
+        today: [
+          {
+            who: "me",
+            t: "把新版本部署上線（等對方平台恢復）",
+            plain:
+              "昨天做好的規格欄位改版（填了才顯示、可移除可加回）已經合併、測試全綠，但今天 Railway 那邊三次都回「我這邊出錯」，所以還沒上線。網站本身完全正常，跑的是上一版。",
+            how: "你說一聲「再試一次部署」，我重跑一次，約三分鐘",
+          },
+          {
+            who: "aaron",
+            t: "跑一次異地備份精靈（約 30 分鐘）",
+            plain:
+              "今天第一次月檢就抓到：雲端備份昨晚沒跑成功，卡在金鑰還沒設定。程式與精靈都寫好也測過了，金鑰依規定只有你能申請與輸入。",
+            how: "在專案目錄執行：bash scripts/setup-offsite-backup.sh",
+          },
+          {
+            who: "aaron",
+            t: "後台把交易條件與商品規格填起來",
+            plain:
+              "程式早就做好，但資料庫是空的——空的就不顯示，客人現在看不到交期、付款、最低訂單，比較頁的規格列也是空白。",
+            how: "後台 → 設定 → 交易條件；商品 → 逐件補 MOQ／外箱／毛重；款式 → 上傳每款照片",
+          },
+          {
+            who: "me",
+            t: "續費提醒（登記簿已經建好，接著做提醒）",
+            plain:
+              "今天已經把客戶登記簿建起來（誰、方案、續費日、模板版本）。下一步是讓機器在到期前 30／7／1 天提醒你，而不是靠每月人工掃一次。",
+            how: "第四章「續費提醒排程」，我可以直接開工",
+          },
+          {
+            who: "me",
+            t: "程式出錯自動記錄＋備份沒跑的第二層通知",
+            plain:
+              "現在網站若有隱性錯誤，只有客人踩到才會知道。另外備份的看門狗掛在 GitHub 上，GitHub 自己停掉時會一起停——需要一個外部的心跳。",
+            how: "第五章「程式錯誤追蹤」與「GitHub 之外的心跳監控」，兩項都是純程式",
+          },
+        ],
+
         next3: [
           {
             t: "跑一次異地備份精靈（只有你能做，約 30 分鐘）",
@@ -563,11 +654,11 @@
             how: "後台 → 設定 → 交易條件；商品 → 逐件補 MOQ／外箱／毛重／櫃量；款式 → 上傳每款照片",
           },
           {
-            t: "決定客戶登記簿放哪裡（先 Google Sheet 也行）",
+            t: "把續費提醒變成機器做的事",
             plain:
-              "一張表記：客戶、方案、續費日、網域、用的模板版本。第一個客戶簽約當天就要有，不然收費會靠記憶。",
+              "客戶登記簿 8/19 已經建好（客戶、方案、續費日、網域、模板版本），但目前要靠每月人工掃一次到期日。第一個客戶簽約後，這件事就不該再靠人記得。",
             risk: "漏收年費、不知道哪個客戶站跑的是哪一版；客戶多了就再也追不回來。",
-            how: "你決定用 Google Sheet 或後台功能，我來建欄位與續費提醒",
+            how: "第四章「續費提醒排程」：到期前 30／7／1 天自動提醒，我可以直接開工",
           },
         ],
 
@@ -643,7 +734,7 @@
             n: "第二章",
             t: "工程護欄：改東西不會把客人的站弄壞",
             plain:
-              "這章是「敢改」的底氣：每次修改都有機器把關、資料庫改版可回溯、上線要人工按鈕、出事有版本可退。2026-08-19 收官：21 堂只剩「每個 PR 一個預覽站」一堂，那一堂已決策延後（不是待辦）。",
+              "這章是「敢改」的底氣：每次修改都有機器把關、資料庫改版可回溯、上線要人工按鈕、出事有版本可退。2026-08-19 收官：21 項只剩「每個 PR 一個預覽站」，而那一項已決策延後（不是待辦）。",
             lessons: [
               {
                 t: "不在主線上直接改（獨立分支＋PR）",
@@ -850,6 +941,7 @@
               {
                 t: "續費提醒排程",
                 s: "todo",
+                today: 1,
                 w: "續費日前 30／7／1 天自動寄信提醒。這層在階段一就要有雛形，哪怕只是自動提醒＋你手動確認到帳。",
               },
               {
@@ -899,12 +991,14 @@
               {
                 t: "加密異地備份到雲端",
                 s: "aaron",
+                today: 1,
                 w: "改成每天由 GitHub 的機器備份、加密後上傳雲端儲存（不再只放在你的 Mac 上）。程式與精靈都寫好、測過了。",
                 n: "最後一步是申請雲端金鑰，只有 Aaron 能做（Agent 不碰金鑰），完成後即生效",
               },
               {
                 t: "沒跑會通知的看門狗",
                 s: "aaron",
+                today: 1,
                 w: "每天檢查雲端最新備份有沒有超過 26 小時沒更新。「沒跑」比「跑失敗」危險：失敗會寄信，沒跑則一片安靜。",
                 n: "與上一項同時生效",
               },
@@ -916,6 +1010,7 @@
               {
                 t: "程式錯誤追蹤",
                 s: "todo",
+                today: 1,
                 w: "客人操作時程式報錯，你要能收到通知並看到現場，而不是等客人抱怨。",
               },
               {
@@ -926,6 +1021,7 @@
               {
                 t: "GitHub 之外的心跳監控",
                 s: "todo",
+                today: 1,
                 w: "備份與看門狗都跑在 GitHub 上；GitHub 因帳務被停用時（8/12、8/14 都發生過），兩者會一起停，而且沒人會通知你。",
               },
               {
@@ -1037,10 +1133,10 @@
               "客戶登記簿建好：收錢、續費、到期不再靠記憶。",
               "昨天沒收尾的規格欄位改版（填了才顯示、可移除可加回）修好測試並完成合併。",
             ],
-            why: "這些東西平常看不見，但它決定「出事會不會變大事」和「換一個人（或換一個 AI）能不能接手」。第二章 21 堂課只剩「每個 PR 一個預覽站」（已決策延後），其餘全部完成。",
+            why: "這些東西平常看不見，但它決定「出事會不會變大事」和「換一個人（或換一個 AI）能不能接手」。第二章 21 項只剩「每個 PR 一個預覽站」（已決策延後），其餘全部完成。",
           },
           {
-            d: "8/18 下午",
+            d: "8/18",
             t: "照 Aaron 手機實測回饋連改六項，規格書資料上站",
             items: [
               "比較頁手機版一次只比 2 個，不用左右滑；電腦維持 3 個。",
@@ -1053,7 +1149,7 @@
             why: "全部來自 Aaron 當天在手機上實際使用的回饋——這就是回饋迴圈該有的速度：上午提、下午上線。合併前有一組審查機器人互相反駁把關，抓到 3 個潛在資料問題都先修掉了。",
           },
           {
-            d: "8/18 凌晨",
+            d: "8/18",
             t: "補多租戶打底、補備份漏洞、把備份搬上雲端",
             items: [
               "8/13 之後新增的 5 張表全部漏了租戶欄位 → 補上，並讓以後漏了機器直接擋。",
@@ -1243,10 +1339,7 @@
         ],
 
         changelog: [
-          [
-            "2026-08-19",
-            "第二章全部完成＋客戶登記簿：7 堂課轉綠，55% → 65%。",
-          ],
+          ["2026-08-19", "第二章全部完成＋客戶登記簿：7 項轉綠，55% → 65%。"],
           ["2026-08-18", "記錄下午六項改動上線與規格書資料上站。"],
           [
             "2026-08-18",
@@ -1254,7 +1347,7 @@
           ],
           [
             "2026-08-18",
-            "建立這份藍圖：七章 71 堂課、兩條里程碑、8/11 起的時間軸。",
+            "建立這份藍圖：七章 71 項、兩條里程碑、8/11 起的時間軸。",
           ],
         ],
       };
@@ -1292,14 +1385,14 @@
         <div class="card headline">
           <div>
             <div class="bignum">${T.pct}<span>%</span></div>
-            <div class="bigcap">${T.done} / ${T.total} 堂課完成</div>
+            <div class="bigcap">${T.done} / ${T.total} 項完成</div>
           </div>
           <div>
             <p class="plain">
-              一句話：<strong>工程護欄（第二章）除了一堂已決策延後的，全部完成；離「能收錢賣第一個客戶站」只差 4 件事（開站陪跑、備份收尾、續費提醒、大陸實測）；離「機器自己會跑」還差 6 個大工程。</strong>
+              一句話：<strong>工程護欄（第二章）除了一項已決策延後的，全部完成；離「能收錢賣第一個客戶站」只差 4 件事（開站陪跑、備份收尾、續費提醒、大陸實測）；離「機器自己會跑」還差 6 個大工程。</strong>
             </p>
             <p class="why">
-              第一章（一套程式開不同產業的站）已 100% 完成，第二章（工程護欄）也只剩一堂已決策延後的——程式地基和「改東西不會弄壞客人網站」的保護網都到位了。
+              第一章（一套程式開不同產業的站）已 100% 完成，第二章（工程護欄）也只剩一項已決策延後的——程式地基和「改東西不會弄壞客人網站」的保護網都到位了。
               現在缺的是實戰：開站腳本沒真的陪客戶跑過、續費提醒還靠每月人工掃登記簿、雲端備份還差最後一步設定收尾。
             </p>
             <div class="barrow">
@@ -1328,6 +1421,17 @@
           })
           .join("")}</div>`;
 
+      document.getElementById("todaylead").textContent = DATA.todayLead;
+      document.getElementById("today").innerHTML = DATA.today
+        .map(
+          (n) => `<div class="todaycard">
+            <div class="mile-t"><span class="todaywho who-${n.who}">${n.who === "me" ? "我來做" : "等你"}</span>${esc(n.t)}</div>
+            <p class="why">${esc(n.plain)}</p>
+            <p class="lnote">怎麼做：${esc(n.how)}</p>
+          </div>`,
+        )
+        .join("");
+
       document.getElementById("next3").innerHTML = DATA.next3
         .map(
           (n, i) => `<div class="card" style="margin-bottom:12px">
@@ -1345,7 +1449,7 @@
           return `<details class="ch">
             <summary>
               <div class="chtop">
-                <span class="chname">${esc(c.n)}　${esc(c.t)}<em>點開看 ${t.total} 堂課</em></span>
+                <span class="chname">${esc(c.n)}　${esc(c.t)}<em>點開看 ${t.total} 項</em></span>
                 <span class="chcount">${t.done}/${t.total}　${t.pct}%</span>
               </div>
               <div class="barrow">
@@ -1357,10 +1461,12 @@
             </summary>
             <div class="lessons">${c.lessons
               .map(
-                (l) => `<div class="lesson" data-s="${l.s}">
+                (
+                  l,
+                ) => `<div class="lesson${l.today ? " today" : ""}" data-s="${l.s}">
                   <div>${pill(l.s)}</div>
                   <div>
-                    <p class="ltitle">${esc(l.t)}</p>
+                    <p class="ltitle">${esc(l.t)}${l.today ? '<span class="tflag">今天可做</span>' : ""}</p>
                     <p class="lplain">${esc(l.w)}</p>
                     ${l.n ? `<p class="lnote">${esc(l.n)}</p>` : ""}
                   </div>
